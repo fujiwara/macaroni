@@ -18,13 +18,20 @@ func main() {
 }
 
 func buildConf() *macaroni.Config {
-
 	// ignore error because default false
 	muteOnNormal, _ := strconv.ParseBool(os.Getenv("SLACK_MUTE_ON_NORMAL"))
 
+	var prefix string
+	if prefix = os.Getenv("MACKEREL_METRIC_NAME_PREFIX"); prefix == "" {
+		prefix = macaroni.DefaultMetricNamePrefix
+	}
+
 	conf := &macaroni.Config{
 		Mackerel: &macaroni.MackerelConfig{
-			ApiKey: os.Getenv("MACKEREL_APIKEY"),
+			ApiKey:           os.Getenv("MACKEREL_APIKEY"),
+			Service:          os.Getenv("MACKEREL_SERVICE"),
+			MetricNamePrefix: prefix,
+			MetricName:       os.Getenv("MACKEREL_METRIC_NAME"),
 		},
 		Slack: &macaroni.SlackConfig{
 			Endpoint:     os.Getenv("SLACK_ENDPOINT"),
