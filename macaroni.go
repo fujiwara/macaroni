@@ -32,12 +32,12 @@ func Run(conf *Config, src io.Reader) error {
 	}
 
 	eg := errgroup.Group{}
-	if conf.Mackerel.ApiKey != "" {
+	if conf.Mackerel != nil {
 		eg.Go(func() error {
 			return reportToMackerel(report, conf.Mackerel)
 		})
 	}
-	if conf.Slack.Endpoint != "" {
+	if conf.Slack != nil {
 		if report.ExitCode == 0 && conf.Slack.MuteOnNormal {
 			// do not report
 			log.Println("[debug] mute on normal exit")
