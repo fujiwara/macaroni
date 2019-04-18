@@ -70,7 +70,7 @@ func buildMackerelConf() (*MackerelConfig, error) {
 	return mc, nil
 }
 
-func buildMetricValues(report horenso.Report, conf *MackerelConfig) []*mackerel.MetricValue {
+func buildMetricValues(report *horenso.Report, conf *MackerelConfig) []*mackerel.MetricValue {
 	var name string
 	if conf.MetricName == "" {
 		name = normalize(report.Command)
@@ -94,7 +94,7 @@ func buildMetricValues(report horenso.Report, conf *MackerelConfig) []*mackerel.
 	}
 }
 
-func reportToMackerel(report horenso.Report, conf *MackerelConfig) error {
+func reportToMackerel(report *horenso.Report, conf *MackerelConfig) error {
 	log.Println("[info] report to Mackerel")
 
 	values := buildMetricValues(report, conf)

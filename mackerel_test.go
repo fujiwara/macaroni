@@ -104,7 +104,7 @@ func TestMackerel(t *testing.T) {
 		}
 
 		if suite.values != nil {
-			values := buildMetricValues(testReport, mc)
+			values := buildMetricValues(&testReport, mc)
 			t.Logf("%#v", values)
 			if diff := cmp.Diff(suite.values, values); diff != "" {
 				t.Error(diff)

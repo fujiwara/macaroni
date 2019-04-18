@@ -67,7 +67,7 @@ func buildSlackConf() (*SlackConfig, error) {
 	return sc, nil
 }
 
-func buildSlackPayload(report horenso.Report, conf *SlackConfig) Payload {
+func buildSlackPayload(report *horenso.Report, conf *SlackConfig) Payload {
 	var message string
 	if report.ExitCode == 0 {
 		message = "horenso reports success"
@@ -101,42 +101,25 @@ func buildSlackPayload(report horenso.Report, conf *SlackConfig) Payload {
 		output = report.Output
 	}
 
+	fields := buildHostFields(report)
+	fields = append(fields,
+		Field{"Command", report.Command},
+		Field{"ExitCode", strconv.Itoa(report.ExitCode)},
+		Field{"Output", "```\n" + tail(output, MaxOutputLength) + "```"},
+		Field{"Started", report.StartAt.Format(time.RFC3339Nano)},
+		Field{"Ended", report.EndAt.Format(time.RFC3339Nano)},
+	)
 	payload.Attachments = []Attachment{
 		Attachment{
 			Fallback: output + " " + report.Command,
 			Color:    color(report.ExitCode),
-			Fields: []Field{
-				Field{
-					Title: "command",
-					Value: report.Command,
-				},
-				Field{
-					Title: "hostname",
-					Value: report.Hostname,
-				},
-				Field{
-					Title: "exitCode",
-					Value: strconv.Itoa(report.ExitCode),
-				},
-				Field{
-					Title: "output",
-					Value: "```\n" + tail(output, MaxOutputLength) + "```",
-				},
-				Field{
-					Title: "started",
-					Value: report.StartAt.Format(time.RFC3339),
-				},
-				Field{
-					Title: "ended",
-					Value: report.EndAt.Format(time.RFC3339),
-				},
-			},
+			Fields:   fields,
 		},
 	}
 	return payload
 }
 
-func reportToSlack(report horenso.Report, conf *SlackConfig) error {
+func reportToSlack(report *horenso.Report, conf *SlackConfig) error {
 	log.Println("[info] report to Slack")
 
 	payload := buildSlackPayload(report, conf)
@@ -157,4 +140,21 @@ func reportToSlack(report horenso.Report, conf *SlackConfig) error {
 	log.Println("[info] posted to Slack")
 
 	return nil
+}
+
+func buildHostFields(report *horenso.Report) []Field {
+	meta, err := getECSMetadata()
+	if err != nil {
+		log.Println("[warn]", err)
+	}
+	if meta != nil {
+		return []Field{
+			Field{"ECS cluster", meta.Cluster},
+			Field{"Task ARN", meta.TaskARN},
+			Field{"Container name", meta.ContainerName},
+		}
+	}
+	return []Field{
+		Field{"Hostname", report.Hostname},
+	}
 }

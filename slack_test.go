@@ -63,12 +63,12 @@ var slackConfigTests = []slackConfigTest{
 					Fallback: "95030\n perl -E 'say 1;warn \"$$\\n\";'",
 					Color:    "#33cc33",
 					Fields: []Field{
-						Field{Title: "command", Value: `perl -E 'say 1;warn "$$\n";'`},
-						Field{Title: "hostname", Value: "webserver.example.com"},
-						Field{Title: "exitCode", Value: "0"},
-						Field{Title: "output", Value: "```\n95030\n```"},
-						Field{Title: "started", Value: "2015-12-28T00:37:10+09:00"},
-						Field{Title: "ended", Value: "2015-12-28T00:37:10+09:00"},
+						Field{Title: "Hostname", Value: "webserver.example.com"},
+						Field{Title: "Command", Value: `perl -E 'say 1;warn "$$\n";'`},
+						Field{Title: "ExitCode", Value: "0"},
+						Field{Title: "Output", Value: "```\n95030\n```"},
+						Field{Title: "Started", Value: "2015-12-28T00:37:10.494282399+09:00"},
+						Field{Title: "Ended", Value: "2015-12-28T00:37:10.546466379+09:00"},
 					},
 				},
 			},
@@ -97,7 +97,7 @@ func TestSlack(t *testing.T) {
 		}
 
 		if suite.payload != nil {
-			payload := buildSlackPayload(testReport, sc)
+			payload := buildSlackPayload(&testReport, sc)
 			t.Logf("%#v", payload)
 			if diff := cmp.Diff(suite.payload, &payload); diff != "" {
 				t.Error(diff)

@@ -34,7 +34,7 @@ func Run(conf *Config, src io.Reader) error {
 	eg := errgroup.Group{}
 	if conf.Mackerel != nil {
 		eg.Go(func() error {
-			return reportToMackerel(report, conf.Mackerel)
+			return reportToMackerel(&report, conf.Mackerel)
 		})
 	}
 	if conf.Slack != nil {
@@ -43,7 +43,7 @@ func Run(conf *Config, src io.Reader) error {
 			log.Println("[debug] mute on normal exit")
 		} else {
 			eg.Go(func() error {
-				return reportToSlack(report, conf.Slack)
+				return reportToSlack(&report, conf.Slack)
 			})
 		}
 	}
