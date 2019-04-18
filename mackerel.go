@@ -1,6 +1,7 @@
 package macaroni
 
 import (
+	"encoding/json"
 	"log"
 	"regexp"
 
@@ -34,31 +35,34 @@ func reportToMackerel(report horenso.Report, conf *MackerelConfig) error {
 		name = conf.MetricName
 	}
 
-	statusMV := &mackerel.MetricValue{
-		Name: conf.MetricNamePrefix + ".error." + name,
-		Time: report.EndAt.Unix(),
+	values := []*mackerel.MetricValue{
+		// error occuered
+		&mackerel.MetricValue{
+			Name:  conf.MetricNamePrefix + ".error." + name,
+			Time:  report.EndAt.Unix(),
+			Value: boolToInt(report.ExitCode != 0),
+		},
+		// elapsed time
+		&mackerel.MetricValue{
+			Name:  conf.MetricNamePrefix + ".elapsed." + name,
+			Time:  report.EndAt.Unix(),
+			Value: report.EndAt.Sub(*report.StartAt).Seconds(),
+		},
 	}
-	if report.ExitCode == 0 {
-		statusMV.Value = 0
-	} else {
-		statusMV.Value = 1
-	}
-	log.Printf("[debug] %#v", *statusMV)
-
-	elapsedMV := &mackerel.MetricValue{
-		Name:  conf.MetricNamePrefix + ".elapsed." + name,
-		Time:  report.EndAt.Unix(),
-		Value: report.EndAt.Sub(*report.StartAt).Seconds(),
-	}
-	log.Printf("[debug] %#v", *elapsedMV)
+	b, _ := json.Marshal(values)
+	log.Printf("[debug] %s", b)
 
 	if conf.Service != "" {
 		log.Printf("[info] post service metrics to %s", conf.Service)
-		return client.PostServiceMetricValues(
-			conf.Service,
-			[]*mackerel.MetricValue{statusMV, elapsedMV},
-		)
+		return client.PostServiceMetricValues(conf.Service, values)
 	}
 
 	return nil
+}
+
+func boolToInt(v bool) int {
+	if v {
+		return 1
+	}
+	return 0
 }
