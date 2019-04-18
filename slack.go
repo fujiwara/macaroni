@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/Songmu/horenso"
@@ -42,20 +43,36 @@ type Field struct {
 	Value string `json:"value"`
 }
 
-func reportToSlack(report horenso.Report, conf *SlackConfig) error {
-	log.Println("[info] report to Slack")
+func buildSlackConf() (*SlackConfig, error) {
+	endpoint := getenv("SLACK_ENDPOINT")
+	channel := getenv("SLACK_CHANNEL")
+
+	if endpoint == "" || channel == "" {
+		if endpoint != "" || channel != "" {
+			log.Println("[warn] enable to Slack reporter, required SLACK_ENDPOINT and SLACK_CHANNEL both. Slack reporter disabled.")
+		}
+		return nil, nil
+	}
+	// ignore error because default false
+	muteOnNormal, _ := strconv.ParseBool(getenv("SLACK_MUTE_ON_NORMAL"))
+	sc := &SlackConfig{
+		Endpoint:     endpoint,
+		Channel:      channel,
+		Username:     getenv("SLACK_USERNAME"),
+		IconEmoji:    getenv("SLACK_ICON_EMOJI"),
+		Mention:      getenv("SLACK_MENTION"),
+		PasteBinCmd:  getenv("SLACK_PASTEBIN_CMD"),
+		MuteOnNormal: muteOnNormal,
+	}
+	return sc, nil
+}
+
+func buildSlackPayload(report horenso.Report, conf *SlackConfig) Payload {
 	var message string
 	if report.ExitCode == 0 {
-		message = fmt.Sprintf(
-			":ok: [%s] horenso reports success",
-			report.Hostname,
-		)
+		message = "horenso reports success"
 	} else {
-		message = fmt.Sprintf(
-			":anger: [%s] horenso reports error! exit with %d",
-			report.Hostname,
-			report.ExitCode,
-		)
+		message = "horenso reports error!"
 		if conf.Mention != "" {
 			message += " " + conf.Mention
 		}
@@ -94,6 +111,14 @@ func reportToSlack(report horenso.Report, conf *SlackConfig) error {
 					Value: report.Command,
 				},
 				Field{
+					Title: "hostname",
+					Value: report.Hostname,
+				},
+				Field{
+					Title: "exitCode",
+					Value: strconv.Itoa(report.ExitCode),
+				},
+				Field{
 					Title: "output",
 					Value: "```\n" + tail(output, MaxOutputLength) + "```",
 				},
@@ -108,6 +133,14 @@ func reportToSlack(report horenso.Report, conf *SlackConfig) error {
 			},
 		},
 	}
+	return payload
+}
+
+func reportToSlack(report horenso.Report, conf *SlackConfig) error {
+	log.Println("[info] report to Slack")
+
+	payload := buildSlackPayload(report, conf)
+
 	b, _ := json.Marshal(payload)
 	b = bytes.ReplaceAll(b, []byte{'&'}, []byte("&amp;"))
 	b = bytes.ReplaceAll(b, []byte{'<'}, []byte("&lt;"))
@@ -122,5 +155,6 @@ func reportToSlack(report horenso.Report, conf *SlackConfig) error {
 		return fmt.Errorf("failed to post to Slack with status %d", resp.StatusCode)
 	}
 	log.Println("[info] posted to Slack")
+
 	return nil
 }
