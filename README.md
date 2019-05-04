@@ -74,7 +74,7 @@ Mackerel reporter posts a report as metrics to Mackerel.
 
 Metrics have two values as below.
 
-1. `{prefix}.error.{name}`: When report.ExitCode is non zero, that value becomes to 1.
+1. `{prefix}.error.{name}`: When report.ExitCode is non zero, that value becomes to 1, otherwise 0.
 1. `{prefix}.elapsed.{name}`: An elapsed time as seconds. (report.EndAt - report.StartAt).
 
 `MACKEREL_TARGET`: A target (Mackerel Host or Service) to post metrics. (required)
