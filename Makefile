@@ -1,14 +1,15 @@
 export GO111MODULE := on
+VERSION = $(shell godzil show-version)
 LATEST_TAG := $(shell git describe --abbrev=0 --tags)
 
 .PHONY: setup setup_ci test lint dist clean release
 
-test: setup
-	go test -v ./...
-
 cmd/macaroni/macaroni: *.go cmd/macaroni/main.go
 	cd cmd/macaroni && \
 	go build -ldflags "-w -s"
+
+test: setup
+	go test -v ./...
 
 install: cmd/macaroni/macaroni
 	install cmd/macaroni/macaroni $(GOPATH)/bin
@@ -25,11 +26,10 @@ lint: setup
 	golint -set_exit_status ./...
 
 dist: setup
-	goxz -pv=$(LATEST_TAG) -os=darwin,linux -build-ldflags="-w -s" -arch=amd64 -d=dist -z ./cmd/macaroni
+	goxz -pv=$(VERSION) -os=darwin,linux -build-ldflags="-w -s" -arch=amd64 -d=dist ./cmd/macaroni
 
 clean:
 	rm -fr dist/* cmd/macaroni/macaroni
 
 release: dist
-	ghr -u fujiwara -r macaroni $(LATEST_TAG) dist/
-
+	ghr -u fujiwara -r macaroni $(VERSION) dist/

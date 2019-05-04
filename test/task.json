@@ -1,0 +1,76 @@
+{
+  "Cluster": "api",
+  "TaskARN": "arn:aws:ecs:ap-northeast-1:999999999999:task/965d53cd-8dd8-483a-b9c6-f0910c3892a4",
+  "Family": "app",
+  "Revision": "1",
+  "DesiredStatus": "RUNNING",
+  "KnownStatus": "RUNNING",
+  "Containers": [
+    {
+      "DockerId": "34d81516e976f638a92b0150c0ad778b5d6942ec557a0706ddbfe22c13de1def",
+      "Name": "~internal~ecs~pause",
+      "DockerName": "ecs-stg-app-31-internalecspause-a6c787e3abeeb77a0000",
+      "Image": "amazon/amazon-ecs-pause:0.1.0",
+      "ImageID": "",
+      "Labels": {
+        "com.amazonaws.ecs.cluster": "api",
+        "com.amazonaws.ecs.container-name": "~internal~ecs~pause",
+        "com.amazonaws.ecs.task-arn": "arn:aws:ecs:ap-northeast-1:999999999999:task/965d53cd-8dd8-483a-b9c6-f0910c3892a4",
+        "com.amazonaws.ecs.task-definition-family": "stg-app",
+        "com.amazonaws.ecs.task-definition-version": "31"
+      },
+      "DesiredStatus": "RESOURCES_PROVISIONED",
+      "KnownStatus": "RESOURCES_PROVISIONED",
+      "Limits": {
+        "CPU": 0,
+        "Memory": 0
+      },
+      "CreatedAt": "2019-04-16T09:17:29.111443737Z",
+      "StartedAt": "2019-04-16T09:17:29.633465562Z",
+      "Type": "CNI_PAUSE",
+      "Networks": [
+        {
+          "NetworkMode": "awsvpc",
+          "IPv4Addresses": [
+            "192.168.1.10"
+          ]
+        }
+      ]
+    },
+    {
+      "DockerId": "6b05558c295f0b6e2917943c8d23b12b09ec26ceb457687d58c948518b2bcbfd",
+      "Name": "app",
+      "DockerName": "ecs-app-1-app-e8bdadf0fcbcaeb59901",
+      "Image": "999999999999.dkr.ecr.ap-northeast-1.amazonaws.com/app:latest",
+      "ImageID": "sha256:1d2353ef8e479df65e25b55e8809163f93cff97846273967b9ee73a50ad28701",
+      "Labels": {
+        "com.amazonaws.ecs.cluster": "api",
+        "com.amazonaws.ecs.container-name": "app",
+        "com.amazonaws.ecs.task-arn": "arn:aws:ecs:ap-northeast-1:999999999999:task/965d53cd-8dd8-483a-b9c6-f0910c3892a4",
+        "com.amazonaws.ecs.task-definition-family": "app",
+        "com.amazonaws.ecs.task-definition-version": "1",
+        "name": "app"
+      },
+      "DesiredStatus": "RUNNING",
+      "KnownStatus": "RUNNING",
+      "Limits": {
+        "CPU": 0,
+        "Memory": 0
+      },
+      "CreatedAt": "2019-04-16T09:17:32.611044702Z",
+      "StartedAt": "2019-04-16T09:17:33.108076079Z",
+      "Type": "NORMAL",
+      "Networks": [
+        {
+          "NetworkMode": "awsvpc",
+          "IPv4Addresses": [
+            "192.168.1.10"
+          ]
+        }
+      ]
+    }
+  ],
+  "PullStartedAt": "2019-04-16T09:17:29.739257361Z",
+  "PullStoppedAt": "2019-04-16T09:17:33.814160724Z",
+  "AvailabilityZone": "ap-northeast-1a"
+}

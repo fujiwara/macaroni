@@ -19,6 +19,28 @@ macaroni has following functions.
 $ horenso --reporter=macaroni -- my-batch-command
 ```
 
+## Installation
+
+### Homebrew
+
+```console
+$ brew install fujiwara/tap/macaroni
+```
+
+### [ghg](https://github.com/Songmu/ghg)
+
+```console
+$ ghg get fujiwara/macaroni
+```
+
+Built binaries are available on gihub releases. https://github.com/fujiwara/macaroni/releases
+
+### go get
+
+```console
+$ go get github.com/fujiwara/macaroni/cmd/macaroni
+```
+
 ## Configuration
 
 Environment variables customize behaviors for macaroni.
