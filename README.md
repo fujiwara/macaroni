@@ -12,7 +12,6 @@ macaroni has following functions.
     - error
     - elapsed time
 
-
 ## Usage
 
 ```console
@@ -50,6 +49,8 @@ All of configurations are defined by environment variables.
 ### Slack reporter
 
 Slack reporter posts a report as a message to Slack.
+
+![](docs/slack.png)
 
 `SLACK_ENDPOINT`: Incoming Webhook URL. (required)
 
