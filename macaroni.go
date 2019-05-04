@@ -16,7 +16,7 @@ import (
 )
 
 var MaxOutputLength = 1000
-var CommandTimeout = 30 * time.Second
+var CommandTimeout = 60 * time.Second
 
 type Config struct {
 	Slack    *SlackConfig
